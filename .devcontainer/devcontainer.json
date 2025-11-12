@@ -1,0 +1,114 @@
+{
+  "name": "kyletube",
+
+  // Build configuration
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  // User configuration (matches Dockerfile)
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+
+  // ==============================================================================
+  // VS CODE CUSTOMIZATION
+  // ==============================================================================
+  "customizations": {
+    "vscode": {
+      // Extensions to install in the container
+      "extensions": [
+        // Git
+        "eamodio.gitlens",
+
+        // Language support
+        "golang.go",
+
+        // Utilities
+        "editorconfig.editorconfig"
+      ],
+
+      // VS Code settings
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n",
+        "editor.formatOnSave": true,
+        "go.toolsManagement.autoUpdate": true
+      }
+    }
+  },
+
+  // ==============================================================================
+  // MOUNTS & VOLUMES
+  // ==============================================================================
+  // Uncomment the mounts below if you want to persist credentials/config
+  // "mounts": [
+  //   // Use Docker volume for Claude credentials - no permission issues, persists across rebuilds
+  //   "source=kyletube-claude-credentials,target=/home/vscode/.claude,type=volume",
+  //
+  //   // Mount SSH keys (read-only) for git operations
+  //   "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly",
+  //
+  //   // Mount git config (read-only)
+  //   "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,readonly"
+  // ],
+
+  // ==============================================================================
+  // POST-CREATE COMMANDS
+  // ==============================================================================
+  // "postCreateCommand": "sudo chown -R vscode:vscode ~/.claude || true",
+
+  // ==============================================================================
+  // ENVIRONMENT VARIABLES
+  // ==============================================================================
+  "remoteEnv": {
+    // Pass through environment variables from host for MCP tools
+    // Add or remove variables as needed for your specific MCP tools
+
+    // API keys
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+
+    // SSH agent socket for git operations
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+
+    // Example: Other common MCP-related variables
+    "KAGI_API_KEY": "${localEnv:KAGI_API_KEY}",
+    // "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+    // "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+    // "AWS_REGION": "${localEnv:AWS_REGION}"
+
+    // Cloudflare credentials
+    "CLOUDFLARE_ACCOUNT_ID": "${localEnv:CLOUDFLARE_ACCOUNT_ID}",
+    "CLOUDFLARE_ACCESS_KEY_ID": "${localEnv:CLOUDFLARE_ACCESS_KEY_ID}",
+    "CLOUDFLARE_SECRET_ACCESS_KEY": "${localEnv:CLOUDFLARE_SECRET_ACCESS_KEY}",
+
+    // Development environment
+    "GO_ENV": "development"
+  },
+
+  // ==============================================================================
+  // PORTS
+  // ==============================================================================
+  // Forward ports from container to host
+  "forwardPorts": [8080],
+
+  // Port attributes
+  "portsAttributes": {
+    "8080": {
+      "label": "Application Server",
+      "onAutoForward": "notify",
+      "protocol": "http"
+    }
+  }
+
+  // ==============================================================================
+  // LIFECYCLE HOOKS
+  // ==============================================================================
+  // "initializeCommand": "echo 'Running on host before container starts'",
+  // "onCreateCommand": "echo 'Container created for the first time'",
+  // "updateContentCommand": "echo 'Container content updated'",
+  // "postStartCommand": "echo 'Container started'",
+  // "postAttachCommand": "echo 'Attached to container'"
+}
