@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     git \
+    openssh-client \
+    # SSH agent relay (for 1Password integration)
+    socat \
     # Process tools (ps, top, etc.)
     procps \
     # User/group management
@@ -52,6 +55,40 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && apt-get install -y --no-install-recommends gh \
     && rm -rf /var/lib/apt/lists/* \
     && gh --version
+
+# Install Helix, Just, and yq in one layer
+RUN HELIX_VERSION="25.01.1" \
+    && JUST_VERSION="1.37.0" \
+    && YQ_VERSION="v4.44.6" \
+    && ARCH=$(dpkg --print-architecture) \
+    && if [ "$ARCH" = "arm64" ]; then \
+        HELIX_ARCH="aarch64"; \
+        JUST_ARCH="aarch64-unknown-linux-musl"; \
+        YQ_ARCH="arm64"; \
+    else \
+        HELIX_ARCH="x86_64"; \
+        JUST_ARCH="x86_64-unknown-linux-musl"; \
+        YQ_ARCH="amd64"; \
+    fi \
+    # Helix
+    && curl -fsSL "https://github.com/helix-editor/helix/releases/download/${HELIX_VERSION}/helix-${HELIX_VERSION}-${HELIX_ARCH}-linux.tar.xz" -o helix.tar.xz \
+    && tar -xJf helix.tar.xz \
+    && mv helix-${HELIX_VERSION}-${HELIX_ARCH}-linux /usr/local/helix \
+    && ln -s /usr/local/helix/hx /usr/local/bin/hx \
+    && rm helix.tar.xz \
+    # Just
+    && curl -fsSL "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${JUST_ARCH}.tar.gz" -o just.tar.gz \
+    && tar -xzf just.tar.gz \
+    && mv just /usr/local/bin/just \
+    && chmod +x /usr/local/bin/just \
+    && rm just.tar.gz \
+    # yq
+    && curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${YQ_ARCH}" -o /usr/local/bin/yq \
+    && chmod +x /usr/local/bin/yq \
+    # Verify installations
+    && hx --version \
+    && just --version \
+    && yq --version
 
 # ==============================================================================
 # LANGUAGE RUNTIMES
