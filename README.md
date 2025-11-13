@@ -6,7 +6,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/kljensen/cfstream?style=for-the-badge&logo=go)](go.mod)
 [![License](https://img.shields.io/github/license/kljensen/cfstream?style=for-the-badge)](LICENSE)
 
-A minimal, fast command-line interface for managing Cloudflare Stream videos.
+A minimal, fast command-line interface for managing [Cloudflare Stream](https://www.cloudflare.com/developer-platform/products/cloudflare-stream/) videos.
 
 ## Features
 
