@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"cfstream/internal/api"
 	"cfstream/internal/config"
-
-	"github.com/spf13/cobra"
 )
 
 var embedCmd = &cobra.Command{
@@ -117,7 +117,7 @@ func runEmbedCode(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to get embed code: %w", err)
 	}
 
-	if outputFormat == "json" {
+	if outputFormat == outputFormatJSON {
 		result := map[string]string{
 			"html": embedCode,
 		}

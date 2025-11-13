@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"cfstream/internal/api"
 	"cfstream/internal/config"
 	"cfstream/internal/output"
 	"cfstream/internal/upload"
-
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 	maxDuration    int
 )
 
-// uploadCmd represents the upload command
+// uploadCmd represents the upload command.
 var uploadCmd = &cobra.Command{
 	Use:   "upload",
 	Short: "Upload videos to Cloudflare Stream",
@@ -34,7 +34,7 @@ var uploadCmd = &cobra.Command{
 - upload direct     - Generate a direct upload URL`,
 }
 
-// uploadFileCmd uploads a local video file
+// uploadFileCmd uploads a local video file.
 var uploadFileCmd = &cobra.Command{
 	Use:   "file <path>",
 	Short: "Upload a local video file",
@@ -132,7 +132,7 @@ The upload uses standard multipart/form-data encoding.`,
 		}
 
 		// Output video details in requested format
-		if outputFormat != "table" {
+		if outputFormat != outputFormatTable {
 			formatter, err := output.NewFormatter(outputFormat)
 			if err != nil {
 				return err
@@ -144,7 +144,7 @@ The upload uses standard multipart/form-data encoding.`,
 	},
 }
 
-// uploadURLCmd uploads a video from a URL
+// uploadURLCmd uploads a video from a URL.
 var uploadURLCmd = &cobra.Command{
 	Use:   "url <url>",
 	Short: "Upload a video from a URL",
@@ -206,7 +206,7 @@ a video ID.`,
 		}
 
 		// Output video details in requested format
-		if outputFormat != "table" {
+		if outputFormat != outputFormatTable {
 			formatter, err := output.NewFormatter(outputFormat)
 			if err != nil {
 				return err
@@ -218,7 +218,7 @@ a video ID.`,
 	},
 }
 
-// uploadDirectCmd generates a direct upload URL
+// uploadDirectCmd generates a direct upload URL.
 var uploadDirectCmd = &cobra.Command{
 	Use:   "direct",
 	Short: "Generate a direct upload URL",
@@ -275,7 +275,7 @@ and can be configured with upload constraints.`,
 		}
 
 		// Output result in requested format
-		if outputFormat != "table" {
+		if outputFormat != outputFormatTable {
 			formatter, err := output.NewFormatter(outputFormat)
 			if err != nil {
 				return err
@@ -287,7 +287,7 @@ and can be configured with upload constraints.`,
 	},
 }
 
-// pollVideoStatus polls the video status until it's ready to stream
+// pollVideoStatus polls the video status until it's ready to stream.
 func pollVideoStatus(ctx context.Context, client api.Client, videoID string) error {
 	const maxAttempts = 60
 	const pollInterval = 5 * time.Second

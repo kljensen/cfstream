@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"cfstream/internal/api"
 	"cfstream/internal/config"
 	"cfstream/internal/output"
-
-	"github.com/spf13/cobra"
 )
 
 var videoCmd = &cobra.Command{
@@ -54,16 +54,16 @@ var videoUpdateCmd = &cobra.Command{
 }
 
 var (
-	// List flags
+	// List flags.
 	listSearch string
 	listLimit  int
 	listAfter  string
 	listStatus string
 
-	// Delete flags
+	// Delete flags.
 	deleteYes bool
 
-	// Update flags
+	// Update flags.
 	updateName              string
 	updateMetadata          string
 	updateRequireSignedURLs string
@@ -277,7 +277,7 @@ func runVideoUpdate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// createClient creates an API client from configuration
+// createClient creates an API client from configuration.
 func createClient() (api.Client, error) {
 	cfg, err := config.Load()
 	if err != nil {

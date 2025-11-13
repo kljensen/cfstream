@@ -5,26 +5,29 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
-	// Import dependencies to ensure they're in go.mod
+	// Import dependencies to ensure they're in go.mod.
 	_ "github.com/cloudflare/cloudflare-go/v3"
 	_ "github.com/olekukonko/tablewriter"
 	_ "github.com/schollz/progressbar/v3"
-	_ "github.com/stretchr/testify/assert"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-const version = "0.1.0"
+const (
+	version           = "0.1.0"
+	outputFormatJSON  = "json"
+	outputFormatTable = "table"
+	outputFormatYAML  = "yaml"
+)
 
 var (
-	// Global flags
+	// Global flags.
 	outputFormat string
 	quiet        bool
 	verbose      bool
 )
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Use:   "cfstream",
 	Short: "Cloudflare Stream management CLI",
@@ -48,12 +51,12 @@ func init() {
 	rootCmd.AddCommand(uploadCmd)
 
 	// Global flags available to all commands
-	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "table", "output format (table, json, yaml)")
+	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", outputFormatTable, "output format (table, json, yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "suppress non-essential output")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	// Bind flags to viper for config file support
-	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
+	_ = viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")) //nolint:errcheck // Flag binding errors are not expected
 
 	// Version template
 	rootCmd.SetVersionTemplate(fmt.Sprintf("cfstream version %s\n", version))

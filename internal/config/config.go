@@ -2,6 +2,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,7 +37,8 @@ func Load() (*Config, error) {
 	// Read config file if it exists
 	if err := v.ReadInConfig(); err != nil {
 		// Ignore file not found errors and permission errors, we'll use defaults
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		var configFileNotFoundError viper.ConfigFileNotFoundError
+		if !errors.As(err, &configFileNotFoundError) {
 			// Also check for generic file system errors (file doesn't exist, permission denied)
 			if !os.IsNotExist(err) && !os.IsPermission(err) {
 				return nil, fmt.Errorf("failed to read config file: %w", err)
@@ -45,9 +47,9 @@ func Load() (*Config, error) {
 	}
 
 	// Environment variables override config file
-	v.BindEnv("account_id", "CFSTREAM_ACCOUNT_ID")
-	v.BindEnv("api_token", "CFSTREAM_API_TOKEN")
-	v.BindEnv("default_output", "CFSTREAM_OUTPUT")
+	_ = v.BindEnv("account_id", "CFSTREAM_ACCOUNT_ID") //nolint:errcheck // Env binding errors are not expected
+	_ = v.BindEnv("api_token", "CFSTREAM_API_TOKEN")   //nolint:errcheck // Env binding errors are not expected
+	_ = v.BindEnv("default_output", "CFSTREAM_OUTPUT") //nolint:errcheck // Env binding errors are not expected
 
 	// Create config struct
 	cfg := &Config{
@@ -69,7 +71,7 @@ func Save(cfg *Config) error {
 	// Ensure config directory exists
 	configPath := Path()
 	configDir := filepath.Dir(configPath)
-	if err := os.MkdirAll(configDir, 0755); err != nil {
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
 
@@ -86,7 +88,8 @@ func Save(cfg *Config) error {
 	// Write config file
 	if err := v.WriteConfig(); err != nil {
 		// If file doesn't exist, create it
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		var configFileNotFoundError viper.ConfigFileNotFoundError
+		if errors.As(err, &configFileNotFoundError) {
 			if err := v.SafeWriteConfig(); err != nil {
 				return fmt.Errorf("failed to write config file: %w", err)
 			}

@@ -1,0 +1,118 @@
+run:
+  timeout: 5m
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+      - shadow
+
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+  revive:
+    rules:
+      - name: receiver-naming
+        disabled: false
+      - name: exported
+        disabled: false
+
+  gofmt:
+    simplify: true
+
+  gofumpt:
+    extra-rules: false
+
+linters:
+  enable-all: true
+  disable:
+    # Disabled because they are overly restrictive or not useful
+    - cyclop
+    - depguard
+    - err113
+    - exhaustive
+    - exhaustruct
+    - forcetypeassert
+    - funlen
+    - gci
+    - gofumpt
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - gocyclo
+    - godox
+    - inamedparam
+    - intrange
+    - ireturn
+    - lll
+    - maintidx
+    - mnd
+    - nestif
+    - nlreturn
+    - nonamedreturns
+    - paralleltest
+    - perfsprint
+    - protogetter
+    - tagliatelle
+    - testableexamples
+    - testpackage
+    - varnamelen
+    - wrapcheck
+    - wsl
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - errcheck
+        - funlen
+        - gochecknoglobals
+        - goconst
+        - goerr113
+        - gosec
+        - unused
+        - testifylint
+        - thelper
+        - usetesting
+        - tenv
+        - musttag
+        - godot
+        - gocritic
+        - stylecheck
+
+    # Exclude example files
+    - path: example_.*\.go
+      linters:
+        - errcheck
+        - gocritic
+
+    # Allow deprecated API usage in internal code
+    - path: internal/
+      linters:
+        - staticcheck
+      text: "SA1019:"
+
+    # Allow fmt.Print* in CLI code (cmd package)
+    - path: cmd/
+      linters:
+        - forbidigo
+
+    # Allow fmt.Println in progress tracker for user feedback
+    - path: internal/upload/progress\.go
+      linters:
+        - forbidigo
+
+    # Exclude godot from internal/output (false positives on multi-line comments)
+    - path: internal/output/
+      linters:
+        - godot

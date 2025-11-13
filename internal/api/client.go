@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -621,6 +622,8 @@ func (c *ClientImpl) UploadFile(ctx context.Context, filePath string, opts *Uplo
 
 // multipartUpload performs a multipart/form-data upload.
 func (c *ClientImpl) multipartUpload(ctx context.Context, uploadURL string, file *os.File, fileSize int64, opts *UploadOptions, progressCh chan<- UploadProgress) error {
+	_ = opts // opts currently unused - metadata is set via UpdateVideo after upload
+
 	// Create a pipe for streaming the multipart data
 	pr, pw := io.Pipe()
 	writer := multipart.NewWriter(pw)
@@ -685,7 +688,7 @@ func (c *ClientImpl) multipartUpload(ctx context.Context, uploadURL string, file
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body) //nolint:errcheck // Error message, best effort read
 		return fmt.Errorf("upload failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -723,7 +726,7 @@ func (c *ClientImpl) tusUploadDirect(ctx context.Context, tusURL string, file *o
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body) //nolint:errcheck // Error message, best effort read
 		return "", fmt.Errorf("TUS upload initiation failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -748,10 +751,10 @@ func (c *ClientImpl) tusUploadDirect(ctx context.Context, tusURL string, file *o
 
 	for {
 		n, err := file.Read(buffer)
-		if n == 0 && err == io.EOF {
+		if n == 0 && errors.Is(err, io.EOF) {
 			break
 		}
-		if err != nil && err != io.EOF {
+		if err != nil && !errors.Is(err, io.EOF) {
 			return "", fmt.Errorf("failed to read file: %w", err)
 		}
 
@@ -774,7 +777,7 @@ func (c *ClientImpl) tusUploadDirect(ctx context.Context, tusURL string, file *o
 		defer chunkResp.Body.Close()
 
 		if chunkResp.StatusCode != http.StatusNoContent {
-			body, _ := io.ReadAll(chunkResp.Body)
+			body, _ := io.ReadAll(chunkResp.Body) //nolint:errcheck // Error message, best effort read
 			return "", fmt.Errorf("chunk upload failed with status %d: %s", chunkResp.StatusCode, string(body))
 		}
 
@@ -788,7 +791,7 @@ func (c *ClientImpl) tusUploadDirect(ctx context.Context, tusURL string, file *o
 			}
 		}
 
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 	}

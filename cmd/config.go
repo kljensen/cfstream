@@ -9,11 +9,15 @@ import (
 	"syscall"
 	"time"
 
-	"cfstream/internal/api"
-	"cfstream/internal/config"
-
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
+
+	"cfstream/internal/api"
+	"cfstream/internal/config"
+)
+
+const (
+	envSourceLabel = " (from env)"
 )
 
 var configCmd = &cobra.Command{
@@ -59,7 +63,7 @@ func runConfigInit(cmd *cobra.Command, args []string) error {
 
 	// Prompt for API Token (masked)
 	fmt.Print("Enter API Token: ")
-	tokenBytes, err := term.ReadPassword(int(syscall.Stdin))
+	tokenBytes, err := term.ReadPassword(syscall.Stdin)
 	fmt.Println() // Print newline after masked input
 	if err != nil {
 		return fmt.Errorf("failed to read API token: %w", err)
@@ -74,7 +78,7 @@ func runConfigInit(cmd *cobra.Command, args []string) error {
 	}
 	output = strings.TrimSpace(output)
 	if output == "" {
-		output = "table"
+		output = outputFormatTable
 	}
 	cfg.DefaultOutput = output
 
@@ -142,14 +146,14 @@ func runConfigShow(cmd *cobra.Command, args []string) error {
 	// Display Account ID
 	accountIDSource := ""
 	if envAccountID != "" {
-		accountIDSource = " (from env)"
+		accountIDSource = envSourceLabel
 	}
 	fmt.Printf("  Account ID: %s%s\n", cfg.AccountID, accountIDSource)
 
 	// Display masked API Token
 	tokenSource := ""
 	if envAPIToken != "" {
-		tokenSource = " (from env)"
+		tokenSource = envSourceLabel
 	}
 	maskedToken := maskToken(cfg.APIToken)
 	fmt.Printf("  API Token:  %s%s\n", maskedToken, tokenSource)
@@ -157,7 +161,7 @@ func runConfigShow(cmd *cobra.Command, args []string) error {
 	// Display output format
 	outputSource := ""
 	if envOutput != "" {
-		outputSource = " (from env)"
+		outputSource = envSourceLabel
 	}
 	fmt.Printf("  Output:     %s%s\n", cfg.DefaultOutput, outputSource)
 
@@ -170,7 +174,7 @@ func runConfigShow(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// maskToken returns a masked version of the API token showing first 8 chars
+// maskToken returns a masked version of the API token showing first 8 chars.
 func maskToken(token string) string {
 	if token == "" {
 		return "<not set>"

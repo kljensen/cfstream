@@ -5,9 +5,9 @@ import (
 	"io"
 	"time"
 
-	"cfstream/internal/api"
-
 	"github.com/schollz/progressbar/v3"
+
+	"cfstream/internal/api"
 )
 
 // ProgressTracker wraps a progress bar and handles upload progress updates.
@@ -56,7 +56,7 @@ func (pt *ProgressTracker) Update(progress api.UploadProgress) {
 	}
 
 	if pt.bar != nil {
-		pt.bar.Set64(progress.BytesSent)
+		_ = pt.bar.Set64(progress.BytesSent) //nolint:errcheck // Progress bar errors are not critical
 	}
 }
 
@@ -67,7 +67,7 @@ func (pt *ProgressTracker) Finish() {
 	}
 
 	if pt.bar != nil {
-		pt.bar.Finish()
+		_ = pt.bar.Finish() //nolint:errcheck // Progress bar errors are not critical
 	}
 }
 

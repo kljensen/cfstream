@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"cfstream/internal/config"
-
 	"github.com/spf13/cobra"
+
+	"cfstream/internal/config"
 )
 
 var linkCmd = &cobra.Command{
@@ -100,7 +100,7 @@ func runLinkPreview(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("this video is private and requires a signed URL\n\nUse: cfstream link signed %s --duration 24h", videoID)
 	}
 
-	if outputFormat == "json" {
+	if outputFormat == outputFormatJSON {
 		result := map[string]string{
 			"url": video.Preview,
 		}
@@ -166,7 +166,7 @@ func runLinkSigned(cmd *cobra.Command, args []string) error {
 	// Construct signed URL
 	signedURL := fmt.Sprintf("https://customer-%s.cloudflarestream.com/%s/watch?token=%s", customerCode, videoID, token)
 
-	if outputFormat == "json" {
+	if outputFormat == outputFormatJSON {
 		result := map[string]string{
 			"url":   signedURL,
 			"token": token,
@@ -219,7 +219,7 @@ func runLinkThumbnail(cmd *cobra.Command, args []string) error {
 		thumbnailURL = fmt.Sprintf("https://customer-%s.cloudflarestream.com/%s/thumbnails/thumbnail.jpg?time=%.0fs", customerCode, videoID, seconds)
 	}
 
-	if outputFormat == "json" {
+	if outputFormat == outputFormatJSON {
 		result := map[string]string{
 			"url": thumbnailURL,
 		}
@@ -262,7 +262,7 @@ func runLinkDASH(cmd *cobra.Command, args []string) error {
 	// Construct DASH URL
 	dashURL := fmt.Sprintf("https://customer-%s.cloudflarestream.com/%s/manifest/video.mpd", customerCode, videoID)
 
-	if outputFormat == "json" {
+	if outputFormat == outputFormatJSON {
 		result := map[string]string{
 			"url": dashURL,
 		}
