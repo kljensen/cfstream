@@ -3,7 +3,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/kljensen/cfstream/ci.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/kljensen/cfstream/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kljensen/cfstream?style=for-the-badge)](https://goreportcard.com/report/github.com/kljensen/cfstream)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/kljensen/cfstream?style=for-the-badge&logo=go)](go.mod)
-[![License](https://img.shields.io/github/license/kljensen/cfstream?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-Unlicense-blue.svg?style=for-the-badge)](LICENSE)
 
 A minimal, fast command-line interface for managing [Cloudflare Stream](https://www.cloudflare.com/developer-platform/products/cloudflare-stream/) videos.
 
@@ -201,4 +201,4 @@ go build -o cfstream
 
 ## License
 
-MIT
+Unlicense
