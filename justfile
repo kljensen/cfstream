@@ -1,4 +1,4 @@
-# Justfile for kyletube
+# Justfile for cfstream
 
 set dotenv-load := true
 
@@ -22,11 +22,17 @@ test-verbose:
 
 # Build the application
 build:
-    go build -o bin/kyletube ./cmd/kyletube
+    mkdir -p bin
+    go build -o bin/cfstream .
+
+# Install to specified directory (e.g., just install ~/bin)
+install INSTALL_DIR: build
+    cp bin/cfstream {{INSTALL_DIR}}/cfstream
+    @echo "✓ Installed to {{INSTALL_DIR}}"
 
 # Run the application
 run *args:
-    go run ./cmd/kyletube {{args}}
+    go run ./cmd/cfstream {{args}}
 
 # Format code
 fmt:
