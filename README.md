@@ -1,7 +1,6 @@
 # cfstream
 
 [![CI](https://img.shields.io/github/actions/workflow/status/kljensen/cfstream/ci.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/kljensen/cfstream/actions/workflows/ci.yml)
-[![Go Reference](https://img.shields.io/badge/go-reference-007d9c?style=for-the-badge&logo=go)](https://pkg.go.dev/github.com/kljensen/cfstream)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kljensen/cfstream?style=for-the-badge)](https://goreportcard.com/report/github.com/kljensen/cfstream)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/kljensen/cfstream?style=for-the-badge&logo=go)](go.mod)
 [![License](https://img.shields.io/github/license/kljensen/cfstream?style=for-the-badge)](LICENSE)
