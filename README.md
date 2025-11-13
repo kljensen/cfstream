@@ -1,47 +1,43 @@
 # cfstream
 
-A command-line interface for managing Cloudflare Stream videos.
+[![CI](https://img.shields.io/github/actions/workflow/status/kljensen/cfstream/ci.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/kljensen/cfstream/actions/workflows/ci.yml)
+[![Go Reference](https://img.shields.io/badge/go-reference-007d9c?style=for-the-badge&logo=go)](https://pkg.go.dev/github.com/kljensen/cfstream)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kljensen/cfstream?style=for-the-badge)](https://goreportcard.com/report/github.com/kljensen/cfstream)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/kljensen/cfstream?style=for-the-badge&logo=go)](go.mod)
+[![License](https://img.shields.io/github/license/kljensen/cfstream?style=for-the-badge)](LICENSE)
+
+A minimal, fast command-line interface for managing Cloudflare Stream videos.
 
 ## Features
 
-- **Upload videos** using TUS protocol (resumable uploads for large files)
-- **Manage videos** (list, get details, update metadata, delete)
-- **Generate links** (preview, signed URLs, thumbnails, HLS, DASH)
-- **Get embed codes** with customization options
-- **Multiple output formats** (table, JSON, YAML)
-- **Interactive configuration** setup
+- 🎥 **Upload videos** with resumable TUS protocol for large files
+- 📊 **Manage videos** - list, get, update, delete with rich filtering
+- 🔗 **Generate links** - preview, signed URLs, thumbnails, HLS/DASH manifests
+- 📦 **Embed codes** - responsive iframes with customization
+- 🎨 **Multiple outputs** - table, JSON, or YAML formats
+- ⚡ **Fast & efficient** - direct API integration with progress tracking
 
 ## Installation
 
-### From Source
-
 ```bash
-git clone <repository-url>
-cd kyletube
-go build -o cfstream
+go install github.com/kljensen/cfstream@latest
 ```
 
-### Install to PATH
+Or build from source:
 
 ```bash
-go install
+git clone https://github.com/kljensen/cfstream.git
+cd cfstream
+go build -o cfstream
 ```
 
 ## Quick Start
 
-### 1. Configure Your Credentials
-
-Run the interactive configuration setup:
+### 1. Configure credentials
 
 ```bash
 cfstream config init
 ```
-
-This will prompt you for:
-- Account ID (found in your Cloudflare dashboard)
-- API Token (create one at https://dash.cloudflare.com/profile/api-tokens)
-- Default output format (table/json/yaml)
-- Default signed URL duration
 
 Or use environment variables:
 
@@ -50,32 +46,26 @@ export CFSTREAM_ACCOUNT_ID=your_account_id
 export CFSTREAM_API_TOKEN=your_api_token
 ```
 
-### 2. Upload Your First Video
+### 2. Upload a video
 
 ```bash
-cfstream upload file video.mp4 --name "My First Video"
+cfstream upload file video.mp4 --name "My Video"
 ```
 
-This will:
-- Upload the video using TUS protocol (resumable)
-- Show a progress bar
-- Wait for processing to complete
-- Return the video ID and preview URL
-
-### 3. Get Links to Your Video
+### 3. Get video links
 
 ```bash
-# Get preview URL
+# Preview URL
 cfstream link preview VIDEO_ID
 
-# Generate signed URL (expires in 2 hours)
-cfstream link signed VIDEO_ID --duration 2h
+# Signed URL (expires in 24h)
+cfstream link signed VIDEO_ID --duration 24h
 
-# Get thumbnail
+# Thumbnail
 cfstream link thumbnail VIDEO_ID --time 30s
 ```
 
-### 4. Get Embed Code
+### 4. Get embed code
 
 ```bash
 cfstream embed code VIDEO_ID --responsive --autoplay --muted
@@ -83,92 +73,54 @@ cfstream embed code VIDEO_ID --responsive --autoplay --muted
 
 ## Commands
 
-### Configuration Management
+### Configuration
 
 ```bash
-# Interactive setup
-cfstream config init
-
-# Show current configuration
-cfstream config show
+cfstream config init              # Interactive setup
+cfstream config show              # Display current config
 ```
 
-### Upload Videos
+### Upload
 
 ```bash
-# Upload local file with TUS protocol
-cfstream upload file video.mp4
-cfstream upload file video.mp4 --name "My Video" --metadata '{"category":"tutorial"}'
-
-# Upload from URL
-cfstream upload url https://example.com/video.mp4
-
-# Generate direct upload URL (for end users)
-cfstream upload direct --expires 2h --max-duration 3600
+cfstream upload file video.mp4    # Upload local file
+cfstream upload url <url>         # Upload from URL
+cfstream upload direct            # Generate direct upload URL
 ```
 
-### Manage Videos
+### Video Management
 
 ```bash
-# List all videos
-cfstream video list
-
-# List with filtering
-cfstream video list --search "tutorial" --limit 100 --status ready
-
-# Get video details
-cfstream video get VIDEO_ID
-
-# Update video metadata
-cfstream video update VIDEO_ID --name "New Name" --metadata '{"key":"value"}'
-
-# Delete video
-cfstream video delete VIDEO_ID
-cfstream video delete VIDEO_ID --yes  # Skip confirmation
+cfstream video list               # List all videos
+cfstream video get VIDEO_ID       # Get video details
+cfstream video update VIDEO_ID    # Update metadata
+cfstream video delete VIDEO_ID    # Delete video
 ```
 
-### Get Video Links
+### Links
 
 ```bash
-# Preview/HLS manifest URL
-cfstream link preview VIDEO_ID
-
-# Signed URL (short-lived)
-cfstream link signed VIDEO_ID --duration 2h
-
-# Thumbnail URL
-cfstream link thumbnail VIDEO_ID --time 30s
-
-# HLS manifest
-cfstream link hls VIDEO_ID
-
-# DASH manifest
-cfstream link dash VIDEO_ID
+cfstream link preview VIDEO_ID    # Preview URL
+cfstream link signed VIDEO_ID     # Signed URL
+cfstream link thumbnail VIDEO_ID  # Thumbnail URL
+cfstream link hls VIDEO_ID        # HLS manifest
+cfstream link dash VIDEO_ID       # DASH manifest
 ```
 
-### Get Embed Code
+### Embed
 
 ```bash
-# Basic embed code
-cfstream embed code VIDEO_ID
-
-# Responsive embed with autoplay
-cfstream embed code VIDEO_ID --responsive --autoplay --muted --loop
+cfstream embed code VIDEO_ID      # Get iframe embed code
 ```
 
 ## Output Formats
 
-All commands support multiple output formats:
+Use `--output` or `-o` to change the output format:
 
 ```bash
-# Table output (default, human-readable)
-cfstream video list
-
-# JSON output (for scripts)
-cfstream video list --output json
-
-# YAML output
-cfstream video list --output yaml
+cfstream video list --output json   # JSON output
+cfstream video list --output yaml   # YAML output
+cfstream video list                 # Table output (default)
 ```
 
 ## Global Flags
@@ -176,136 +128,77 @@ cfstream video list --output yaml
 - `--output, -o` - Output format (table, json, yaml)
 - `--quiet, -q` - Suppress non-essential output
 - `--verbose, -v` - Verbose output
+- `--help, -h` - Show help
 - `--version` - Show version
 
 ## Examples
 
-### Upload and Share Workflow
+### Upload and share workflow
 
 ```bash
-# Upload a video
+# Upload
 cfstream upload file presentation.mp4 --name "Q4 Presentation"
 
-# Get the video ID from output (e.g., abc123def456)
-
-# Generate a signed URL valid for 24 hours
+# Generate signed URL (24h expiry)
 cfstream link signed abc123def456 --duration 24h
 
-# Or get an embed code
+# Or get embed code
 cfstream embed code abc123def456 --responsive
 ```
 
-### Batch Operations with JSON
+### Batch operations with JSON
 
 ```bash
-# List all videos as JSON
+# Export all videos
 cfstream video list --output json > videos.json
 
-# Get specific video details
-cfstream video get abc123def456 --output json | jq '.name'
+# Parse with jq
+cfstream video get VIDEO_ID --output json | jq '.name'
 ```
 
-### Search and Filter
+### Search and filter
 
 ```bash
-# Find videos by name
+# Find by name
 cfstream video list --search "tutorial"
 
-# List only ready videos
+# Filter by status
 cfstream video list --status ready --limit 50
 ```
 
-## Features
+## Configuration
 
-### TUS Protocol for Resumable Uploads
+Configuration is loaded from (in order of precedence):
 
-The CLI uses the TUS protocol for file uploads, which provides:
-- Resumable uploads for large files (>200MB)
-- Chunked uploads (50MB chunks)
-- Progress tracking with speed and ETA
-- Automatic retry on network failures
+1. Environment variables (`CFSTREAM_*`)
+2. Config file (`~/.config/cfstream/config.yaml`)
+3. Defaults
 
-### Configuration Flexibility
+### Environment Variables
 
-Configuration can be loaded from:
-1. Config file (`~/.cfstream.yaml`)
-2. Environment variables (override config file)
-3. Default values
-
-Environment variables take precedence over config file values.
-
-### Error Handling
-
-The CLI provides clear, actionable error messages:
-- Configuration errors → Run `cfstream config init`
-- Authentication errors → Check your API token
-- Not found errors → Verify video ID
-- Rate limit errors → Wait and retry
+- `CFSTREAM_ACCOUNT_ID` - Cloudflare account ID
+- `CFSTREAM_API_TOKEN` - API token
+- `CFSTREAM_OUTPUT` - Default output format
 
 ## Development
 
-### Project Structure
-
-```
-cfstream/
-├── cmd/                # Cobra commands
-│   ├── root.go
-│   ├── config.go
-│   ├── upload.go
-│   ├── video.go
-│   ├── link.go
-│   └── embed.go
-├── internal/
-│   ├── api/            # Cloudflare API client
-│   ├── config/         # Configuration management
-│   ├── output/         # Output formatters
-│   └── upload/         # Upload progress tracking
-├── main.go
-├── PLAN.md            # Implementation plan
-└── README.md
-```
-
-### Running Tests
+### Run tests
 
 ```bash
-# Run all tests
 go test ./...
-
-# Run tests with coverage
-go test -cover ./...
-
-# Run specific package tests
-go test ./internal/config/
 ```
 
-### Building
+### Run linter
 
 ```bash
-# Build for current platform
-go build -o cfstream
-
-# Build for multiple platforms
-GOOS=linux GOARCH=amd64 go build -o cfstream-linux-amd64
-GOOS=darwin GOARCH=amd64 go build -o cfstream-darwin-amd64
-GOOS=windows GOARCH=amd64 go build -o cfstream-windows-amd64.exe
+golangci-lint run
 ```
 
-## Implementation Status
+### Build
 
-✅ **Phase 1: Foundation**
-- Project structure and dependencies
-- Configuration management
-- Output formatters (table, JSON, YAML)
-- API client wrapper
-
-✅ **Phase 2: Core Commands**
-- Config commands (init, show)
-- Video commands (list, get, update, delete)
-- Link commands (preview, signed, thumbnail, HLS, DASH)
-- Embed commands
-- Upload commands with TUS protocol
-
-See [PLAN.md](PLAN.md) for the complete implementation plan.
+```bash
+go build -o cfstream
+```
 
 ## License
 
